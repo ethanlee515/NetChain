@@ -1,14 +1,23 @@
-header_type keyvalue_t {
+header_type netchain_t {
 	fields {
 		preamble : 64;
-		unused : 40;
-		mtype : 8;
+		type : 8;
 		key : 32;
 		value : 32;
+		num_valid : 32;
 	}
 }
 
-header keyvalue_t keyvalue;
+
+header_type port_t {
+	fields {
+		port_num : 8;
+	}
+}
+
+header netchain_t netchain;
+
+header port_t port;
 
 register kv_store {
 	width : 32;
@@ -16,8 +25,9 @@ register kv_store {
 }
 
 parser start {
-    extract(keyvalue);
-    return ingress;
+	extract(netchain);
+	extract(port);
+	return ingress;
 }
 
 table check_mtype {
@@ -32,26 +42,54 @@ table check_mtype {
 	}
 }
 
-action put() {
-	modify_field(standard_metadata.egress_spec, standard_metadata.ingress_port);
-	modify_field(keyvalue.mtype, 3);
-	register_write(kv_store, keyvalue.key, keyvalue.value);
+action _route {
+	modify_field(standard_metadata.egress_spec, port.port_num);
+	remove_header(port);	
 }
 
-action get() {
-	modify_field(standard_metadata.egress_spec, standard_metadata.ingress_port);
-	modify_field(keyvalue.mtype, 2);
-	register_read(keyvalue.value, kv_store, keyvalue.key);
+action _put {
+	register_write(kv_store, netchain.key, netchain.value);
 }
+
+action _get {
+	register_read(netchain.value, kv_store, netchain.key);
+}
+
 
 action _drop() {
 	drop();
 }
 
+action _nop {}
+
+table process {
+	reads {
+		netchain.preamble : exact;
+		netchain.type : exact;
+		netchain.key : exact;
+	}
+	actions {
+		_put;
+		_get;
+		_nop;
+	}
+}
+
+table route {
+	reads {
+		netchain.preamble : exact;
+	}
+	actions {
+		_route;
+		_drop;
+	}
+}
+
 control ingress {
-	apply(check_mtype);
+
 }
 
 control egress {
-    // leave empty
+	//empty
 }
+
