@@ -39,6 +39,8 @@ def main():
         sys.exit(1)
 
     src, dst = sys.argv[1:]
+    print src
+    print dst
 
     nb_hosts, nb_switches, links = read_topo()
 

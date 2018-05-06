@@ -1,0 +1,4 @@
+table_set_default check_easyroute _drop
+table_add check_easyroute _no_op 0 =>
+table_set_default check_num_valid route
+table_add check_num_valid _drop 0 =>

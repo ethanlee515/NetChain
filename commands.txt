@@ -1,3 +1,2 @@
-table_set_default check_mtype _drop
-table_add check_mtype get 1 0 =>
-table_add check_mtype put 1 1 =>
+table_set_default process _nop
+table_set_default route _route

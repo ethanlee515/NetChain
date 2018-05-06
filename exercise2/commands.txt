@@ -1,0 +1,3 @@
+table_set_default check_mtype _drop
+table_add check_mtype get 1 0 =>
+table_add check_mtype put 1 1 =>

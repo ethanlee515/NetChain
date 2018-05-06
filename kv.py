@@ -3,75 +3,62 @@
 from scapy.all import sniff, sendp
 from scapy.all import Packet
 from scapy.all import ShortField, IntField, LongField, BitField, ByteField
-
+from netchain import NetChain
 import networkx as nx
 import time
 import sys
 import threading
+import route
 
-class KeyValue(Packet):
-	name = "KeyValue"
-	fields_desc = [
-		LongField("preamble", 0),
-		IntField("num_valid", 0),
-		ByteField("port", 0),
-		ByteField("mtype", 0),
-		IntField("key", 0),
-		IntField("value", 0),
-	]
+if len(sys.argv) != 4:
+	print("usage: kv.py hostname controller_name nb_vNodes")
+	exit()
 
-def toInt(s):
-	return (ord(s[0]) << 24) + (ord(s[1]) << 16) + (ord(s[2]) << 8) + ord(s[3])
+hostname = sys.argv[1]
+controller_name = sys.argv[2]
+nb_vNodes = int(sys.argv[3])
+
+print hostname
+print controller_name
+print nb_vNodes
+
+def port_str(key):
+	print hostname
+	vNodes = route.getVNodes(key, nb_vNodes)
+	switches = ["s" + str(route.getSwitch(vNode, nb_vNodes)) for vNode in vNodes]
+	s = route.route(hostname, switches[0])
+	s += route.route(switches[0], switches[1])
+	s += route.route(switches[1], switches[2])
+	s += route.route(switches[2], hostname)
+	return s
 
 def send_pkt():
 	time.sleep(0.1)
 	sys.stdout.flush()
 	tokens = raw_input("What do you want to send: ").split()
-	if len(tokens) == 2:
-		if tokens[0] != "get":
-			print "invalid format"
-			sys.stdout.flush()
-			send_pkt()
-		else:
-			try:
-				p = KeyValue(preamble=1, key=int(tokens[1]))
-				sendp(p, iface="eth0")
-			except ValueError:
-				print "invalid format"
-				sys.stdout.flush()
-				send_pkt()
-	elif len(tokens) == 3:
-		if tokens[0] != "put":
-			print "invalid format"
-			sys.stdout.flush()
-			send_pkt()
-		else:
-			try:
-				p = KeyValue(preamble=1, mtype=1, key=int(tokens[1]), value=int(tokens[2]))
-				sendp(p, iface="eth0")
-			except ValueError:
-				print "invalid format"
-				sys.stdout.flush()
-				send_pkt()
-	else:
-		print "invalid format"
-		sys.stdout.flush()
-		send_pkt()
+	key = int(tokens[1])
+	if tokens[0] == "get":
+		p = NetChain(key=key) / port_str(key)
+	elif tokens[0] == "put":
+		p = NetChain(mtype=1, key=key, value=int(tokens[2])) / port_str(key)
+	elif tokens[0] == "insert":
+		p = NetChain(mtype=2, key=key) / route.route(hostname, server_name)
+	sendp(p, iface="eth0")
 
 def handle_pkt(pkt):
 	pkt = str(pkt)
-	if len(pkt) != 22:
+	if len(pkt) != 26:
 		return
 	preamble = pkt[:8]
-	if preamble != "\x00" * 7 + "\x01":
+	if preamble != "\x00" * 7 + "\x02":
 		return
-	mtype = pkt[13]
-	if mtype == "\x02":
-		time.sleep(.1)
-		print toInt(pkt[18:])
-		sys.stdout.flush()
-	if mtype == "\x02" or mtype == "\x03":
-		send_pkt()
+	mtype = pkt[8]
+#	if mtype == "\x00":
+#		time.sleep(.1)
+#		print struct.unpack("!L", pkt[14:18])
+#		sys.stdout.flush()
+	print ord(mtype)
+	send_pkt()
 
 t = threading.Thread(target=sniff,
 	kwargs={"iface": "eth0",

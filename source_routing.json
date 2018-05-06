@@ -48,7 +48,7 @@
             "max_length": null
         },
         {
-            "name": "keyvalue_t",
+            "name": "netchain_t",
             "id": 1,
             "fields": [
                 [
@@ -56,11 +56,11 @@
                     64
                 ],
                 [
-                    "unused",
-                    40
+                    "mtype",
+                    8
                 ],
                 [
-                    "mtype",
+                    "dest",
                     8
                 ],
                 [
@@ -70,6 +70,18 @@
                 [
                     "value",
                     32
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "port_t",
+            "id": 2,
+            "fields": [
+                [
+                    "port_num",
+                    8
                 ]
             ],
             "length_exp": null,
@@ -84,9 +96,15 @@
             "metadata": true
         },
         {
-            "name": "keyvalue",
+            "name": "netchain",
             "id": 1,
-            "header_type": "keyvalue_t",
+            "header_type": "netchain_t",
+            "metadata": false
+        },
+        {
+            "name": "port",
+            "id": 2,
+            "header_type": "port_t",
             "metadata": false
         }
     ],
@@ -106,7 +124,16 @@
                             "parameters": [
                                 {
                                     "type": "regular",
-                                    "value": "keyvalue"
+                                    "value": "netchain"
+                                }
+                            ]
+                        },
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "port"
                                 }
                             ]
                         }
@@ -130,59 +157,25 @@
             "name": "deparser",
             "id": 0,
             "order": [
-                "keyvalue"
+                "netchain",
+                "port"
             ]
         }
     ],
     "meter_arrays": [],
     "actions": [
         {
-            "name": "get",
+            "name": "_get",
             "id": 0,
             "runtime_data": [],
             "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "standard_metadata",
-                                "egress_spec"
-                            ]
-                        },
-                        {
-                            "type": "field",
-                            "value": [
-                                "standard_metadata",
-                                "ingress_port"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "keyvalue",
-                                "mtype"
-                            ]
-                        },
-                        {
-                            "type": "hexstr",
-                            "value": "0x2"
-                        }
-                    ]
-                },
                 {
                     "op": "register_read",
                     "parameters": [
                         {
                             "type": "field",
                             "value": [
-                                "keyvalue",
+                                "netchain",
                                 "value"
                             ]
                         },
@@ -193,7 +186,7 @@
                         {
                             "type": "field",
                             "value": [
-                                "keyvalue",
+                                "netchain",
                                 "key"
                             ]
                         }
@@ -202,7 +195,7 @@
             ]
         },
         {
-            "name": "put",
+            "name": "_route",
             "id": 1,
             "runtime_data": [],
             "primitives": [
@@ -219,28 +212,28 @@
                         {
                             "type": "field",
                             "value": [
-                                "standard_metadata",
-                                "ingress_port"
+                                "port",
+                                "port_num"
                             ]
                         }
                     ]
                 },
                 {
-                    "op": "modify_field",
+                    "op": "remove_header",
                     "parameters": [
                         {
-                            "type": "field",
-                            "value": [
-                                "keyvalue",
-                                "mtype"
-                            ]
-                        },
-                        {
-                            "type": "hexstr",
-                            "value": "0x3"
+                            "type": "header",
+                            "value": "port"
                         }
                     ]
-                },
+                }
+            ]
+        },
+        {
+            "name": "_put",
+            "id": 2,
+            "runtime_data": [],
+            "primitives": [
                 {
                     "op": "register_write",
                     "parameters": [
@@ -251,14 +244,14 @@
                         {
                             "type": "field",
                             "value": [
-                                "keyvalue",
+                                "netchain",
                                 "key"
                             ]
                         },
                         {
                             "type": "field",
                             "value": [
-                                "keyvalue",
+                                "netchain",
                                 "value"
                             ]
                         }
@@ -268,7 +261,7 @@
         },
         {
             "name": "_drop",
-            "id": 2,
+            "id": 3,
             "runtime_data": [],
             "primitives": [
                 {
@@ -276,16 +269,22 @@
                     "parameters": []
                 }
             ]
+        },
+        {
+            "name": "_nop",
+            "id": 4,
+            "runtime_data": [],
+            "primitives": []
         }
     ],
     "pipelines": [
         {
             "name": "ingress",
             "id": 0,
-            "init_table": "check_mtype",
+            "init_table": "process",
             "tables": [
                 {
-                    "name": "check_mtype",
+                    "name": "process",
                     "id": 0,
                     "match_type": "exact",
                     "type": "simple",
@@ -297,7 +296,7 @@
                         {
                             "match_type": "exact",
                             "target": [
-                                "keyvalue",
+                                "netchain",
                                 "preamble"
                             ],
                             "mask": null
@@ -305,20 +304,65 @@
                         {
                             "match_type": "exact",
                             "target": [
-                                "keyvalue",
+                                "netchain",
                                 "mtype"
+                            ],
+                            "mask": null
+                        },
+                        {
+                            "match_type": "exact",
+                            "target": [
+                                "netchain",
+                                "dest"
+                            ],
+                            "mask": null
+                        },
+                        {
+                            "match_type": "exact",
+                            "target": [
+                                "netchain",
+                                "key"
                             ],
                             "mask": null
                         }
                     ],
                     "actions": [
-                        "put",
-                        "get",
+                        "_put",
+                        "_get",
+                        "_nop"
+                    ],
+                    "next_tables": {
+                        "_put": "route",
+                        "_get": "route",
+                        "_nop": "route"
+                    },
+                    "base_default_next": "route"
+                },
+                {
+                    "name": "route",
+                    "id": 1,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 16384,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [
+                        {
+                            "match_type": "exact",
+                            "target": [
+                                "netchain",
+                                "preamble"
+                            ],
+                            "mask": null
+                        }
+                    ],
+                    "actions": [
+                        "_route",
                         "_drop"
                     ],
                     "next_tables": {
-                        "put": null,
-                        "get": null,
+                        "_route": null,
                         "_drop": null
                     },
                     "base_default_next": null
