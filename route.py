@@ -17,8 +17,8 @@ with open("topo.txt", "r") as f:
 
 nb_hosts = int(nb_hosts)
 nb_switches = int(nb_switches)
-nb_vnodes = 100
-max_key = 1000
+nb_vnodes = 20
+max_key = 200
 port_map = {}
 
 for a, b in links:

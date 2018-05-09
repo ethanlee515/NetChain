@@ -10,17 +10,15 @@ import sys
 import threading
 import route
 
-if len(sys.argv) != 3:
-	print("usage: kv.py hostname controller_name")
+if len(sys.argv) != 2:
+	print("usage: kv.py hostname")
 	exit()
 
 hostname = sys.argv[1]
-controller = sys.argv[2]
-nb_vNodes = 50
 
 def port_str(key):
-	vNodes = route.getVNodes(key, nb_vNodes)
-	switches = ["s" + str(route.getSwitch(vNode, nb_vNodes)) for vNode in vNodes]
+	chain = route.get_chain(key) 
+	switches = ["s" + str(switch)) for switch in chain]
 	s = route.route(hostname, switches[0])
 	s += route.route(switches[0], switches[1])
 	s += route.route(switches[1], switches[2])
@@ -34,11 +32,13 @@ def send_pkt():
 	key = int(tokens[1])
 	if tokens[0] == "get":
 		p = NetChain(key=key) / port_str(key)
+		sendp(p, iface="eth0")
 	elif tokens[0] == "put":
 		p = NetChain(mtype=1, key=key, value=int(tokens[2])) / port_str(key)
-	elif tokens[0] == "insert":
-		p = NetChain(mtype=2, key=key) / route.route(hostname, controller)
-	sendp(p, iface="eth0")
+		sendp(p, iface="eth0")
+	else:
+		print("invalid input")
+		send_pkt()
 
 def handle_pkt(pkt):
 	pkt = str(pkt)
@@ -49,11 +49,10 @@ def handle_pkt(pkt):
 	if preamble != "\x00" * 7 + "\x02":
 		return
 	mtype = pkt[8]
-#	if mtype == "\x00":
-#		time.sleep(.1)
-#		print struct.unpack("!L", pkt[14:18])
-#		sys.stdout.flush()
-	print ord(mtype)
+	if mtype == "\x00":
+		time.sleep(.1)
+		print struct.unpack("!L", pkt[14:18])
+		sys.stdout.flush()
 	send_pkt()
 
 t = threading.Thread(target=sniff,

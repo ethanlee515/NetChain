@@ -165,37 +165,13 @@
     "meter_arrays": [],
     "actions": [
         {
-            "name": "_route",
+            "name": "_drop",
             "id": 0,
             "runtime_data": [],
             "primitives": [
                 {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "standard_metadata",
-                                "egress_spec"
-                            ]
-                        },
-                        {
-                            "type": "field",
-                            "value": [
-                                "port",
-                                "port_num"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "op": "remove_header",
-                    "parameters": [
-                        {
-                            "type": "header",
-                            "value": "port"
-                        }
-                    ]
+                    "op": "drop",
+                    "parameters": []
                 }
             ]
         },
@@ -252,13 +228,37 @@
             ]
         },
         {
-            "name": "_drop",
+            "name": "_route",
             "id": 2,
             "runtime_data": [],
             "primitives": [
                 {
-                    "op": "drop",
-                    "parameters": []
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "standard_metadata",
+                                "egress_spec"
+                            ]
+                        },
+                        {
+                            "type": "field",
+                            "value": [
+                                "port",
+                                "port_num"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "op": "remove_header",
+                    "parameters": [
+                        {
+                            "type": "header",
+                            "value": "port"
+                        }
+                    ]
                 }
             ]
         },
