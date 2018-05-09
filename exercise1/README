@@ -1,0 +1,2 @@
+This should generate the required performance.
+send.py is modified so that strings less than 2 characters long can be sent.
