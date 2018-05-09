@@ -29,7 +29,7 @@ with open("commands.txt", "w+") as f:
 		commands[tail - 1].append(g_tail)
 
 for i in range(route.nb_switches):
-	with open("commands" + str(i + 1) + ".txt") as f:
+	with open("commands" + str(i + 1) + ".txt", "w+") as f:
 		f.write("table_set_default process _nop\n")
 		f.write("table_set_default route _drop\n")
 		f.write("table_add route _route 2 =>")

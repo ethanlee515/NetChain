@@ -16,7 +16,6 @@ header_type port_t {
 }
 
 header netchain_t netchain;
-
 header port_t port;
 
 register kv_store {

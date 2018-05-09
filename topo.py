@@ -108,7 +108,7 @@ def main():
     for i in xrange(nb_switches):
         cmd = [args.cli, "--json", args.json,
                "--thrift-port", str(_THRIFT_BASE_PORT + i)]
-        with open("commands.txt", "r") as f:
+        with open("commands" + str(i + 1) + ".txt", "r") as f:
             print " ".join(cmd)
             try:
                 output = subprocess.check_output(cmd, stdin = f)
