@@ -3,7 +3,6 @@
 from scapy.all import sniff, sendp
 from scapy.all import Packet
 from scapy.all import ShortField, IntField, LongField, BitField, ByteField
-from netchain import NetChain
 import struct
 import networkx as nx
 import time
@@ -16,6 +15,16 @@ if len(sys.argv) != 2:
 	exit()
 
 hostname = sys.argv[1]
+
+class NetChain(Packet):
+	name = "KeyValue"
+	fields_desc = [
+		LongField("preamble", 2),
+		ByteField("mtype", 0),
+		ByteField("dest" , 0),
+		IntField("key", 0),
+		IntField("value", 0),
+	]
 
 def send_pkt():
 	time.sleep(0.1)
