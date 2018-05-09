@@ -46,8 +46,8 @@ def route(src, dst):
 		first = h
 	return ret
 
-def getSwitch(vNodeID):
-	return (vNodeID / nb_vnodes) + 1
+def get_switch(vNodeID):
+	return (vNodeID * nb_switches / nb_vnodes) + 1
 
 def hash(vNodeID):
 	return (str(vNodeID * 127)).__hash__() % max_key
@@ -55,13 +55,28 @@ def hash(vNodeID):
 vnodes = [x for x in range(nb_vnodes)]
 vnodes.sort(key=lambda x : hash(x))
 
-
 # Converts a key to the corresponding virtual node number	
-def getVNodes(key):
-	pass
-	#TODO
+def get_chain(key):
+	for i in range(len(vnodes)):
+		if hash(vnodes[i]) > key:
+			break
+	i %= nb_vnodes
+	head = get_switch(vnodes[i])
+	while get_switch(vnodes[i]) == head:
+		i = (i + 1) % nb_vnodes
+	body = get_switch(vnodes[i])
+	while get_switch(vnodes[i]) == head or get_switch(vnodes[i]) == body:
+		i = (i + 1) % nb_vnodes
+	tail = get_switch(vnodes[i])
+	return (head, body, tail)
+
+def make_chain_command(key):
+	
+	
 
 if __name__ == "__main__":
-	print vnodes
-	for n in vnodes:
-		print hash(n)
+	print(get_chain(147))
+	print(get_chain(2812))
+	print(get_chain(7738))
+	print(get_chain(9948))
+
