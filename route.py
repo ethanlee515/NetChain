@@ -30,7 +30,6 @@ for a, b in links:
 	port_map[a][b] = len(port_map[a]) + 1
 	port_map[b][a] = len(port_map[b]) + 1
 
-
 G = nx.Graph()
 for a, b in links:
 	G.add_edge(a, b)
@@ -57,6 +56,6 @@ def getSwitch(vNode, nb_vNodes):
 
 # Converts a key to the corresponding virtual node number	
 def getVNodes(key, nb_vNodes):
-	x = nb_vNodes * key / 10000
+	x = (nb_vNodes * key / 10000) % nb_vNodes
 	return [x, (x + 1) % nb_vNodes, (x + 2) % nb_vNodes]
 

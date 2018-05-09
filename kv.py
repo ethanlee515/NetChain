@@ -10,20 +10,15 @@ import sys
 import threading
 import route
 
-if len(sys.argv) != 4:
-	print("usage: kv.py hostname controller_name nb_vNodes")
+if len(sys.argv) != 3:
+	print("usage: kv.py hostname controller_name")
 	exit()
 
 hostname = sys.argv[1]
-controller_name = sys.argv[2]
-nb_vNodes = int(sys.argv[3])
-
-print hostname
-print controller_name
-print nb_vNodes
+controller = sys.argv[2]
+nb_vNodes = 50
 
 def port_str(key):
-	print hostname
 	vNodes = route.getVNodes(key, nb_vNodes)
 	switches = ["s" + str(route.getSwitch(vNode, nb_vNodes)) for vNode in vNodes]
 	s = route.route(hostname, switches[0])
@@ -42,13 +37,14 @@ def send_pkt():
 	elif tokens[0] == "put":
 		p = NetChain(mtype=1, key=key, value=int(tokens[2])) / port_str(key)
 	elif tokens[0] == "insert":
-		p = NetChain(mtype=2, key=key) / route.route(hostname, server_name)
+		p = NetChain(mtype=2, key=key) / route.route(hostname, controller)
 	sendp(p, iface="eth0")
 
 def handle_pkt(pkt):
 	pkt = str(pkt)
-	if len(pkt) != 26:
+	if len(pkt) != 19:
 		return
+
 	preamble = pkt[:8]
 	if preamble != "\x00" * 7 + "\x02":
 		return

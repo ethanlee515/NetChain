@@ -35,16 +35,15 @@ action _route() {
 	remove_header(port);	
 }
 
-action _put() {
-	//TODO modify next dest
-	register_write(kv_store, netchain.key, netchain.value);
+action _put(loc, dest) {
+	modify_field(netchain.dest, dest);
+	register_write(kv_store, loc, netchain.value);
 }
 
-action _get() {
-	//TODO modify next dest
-	register_read(netchain.value, kv_store, netchain.key);
+action _get(loc, dest) {
+	modify_field(netchain.dest, dest);
+	register_read(netchain.value, kv_store, loc);
 }
-
 
 action _drop() {
 	drop();

@@ -165,38 +165,8 @@
     "meter_arrays": [],
     "actions": [
         {
-            "name": "_get",
-            "id": 0,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "register_read",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "netchain",
-                                "value"
-                            ]
-                        },
-                        {
-                            "type": "register_array",
-                            "value": "kv_store"
-                        },
-                        {
-                            "type": "field",
-                            "value": [
-                                "netchain",
-                                "key"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "name": "_route",
-            "id": 1,
+            "id": 0,
             "runtime_data": [],
             "primitives": [
                 {
@@ -231,9 +201,34 @@
         },
         {
             "name": "_put",
-            "id": 2,
-            "runtime_data": [],
+            "id": 1,
+            "runtime_data": [
+                {
+                    "name": "loc",
+                    "bitwidth": 32
+                },
+                {
+                    "name": "dest",
+                    "bitwidth": 8
+                }
+            ],
             "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "netchain",
+                                "dest"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                },
                 {
                     "op": "register_write",
                     "parameters": [
@@ -242,11 +237,8 @@
                             "value": "kv_store"
                         },
                         {
-                            "type": "field",
-                            "value": [
-                                "netchain",
-                                "key"
-                            ]
+                            "type": "runtime_data",
+                            "value": 0
                         },
                         {
                             "type": "field",
@@ -261,12 +253,64 @@
         },
         {
             "name": "_drop",
-            "id": 3,
+            "id": 2,
             "runtime_data": [],
             "primitives": [
                 {
                     "op": "drop",
                     "parameters": []
+                }
+            ]
+        },
+        {
+            "name": "_get",
+            "id": 3,
+            "runtime_data": [
+                {
+                    "name": "loc",
+                    "bitwidth": 32
+                },
+                {
+                    "name": "dest",
+                    "bitwidth": 8
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "netchain",
+                                "dest"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "op": "register_read",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "netchain",
+                                "value"
+                            ]
+                        },
+                        {
+                            "type": "register_array",
+                            "value": "kv_store"
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
                 }
             ]
         },
