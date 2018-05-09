@@ -40,8 +40,8 @@ shortest_paths = nx.shortest_path(G)
 def route(src, dst):
 	path = shortest_paths[src][dst]
 	ret = ""
-	first = path[1]
-	for h in path[2:]:
+	first = path[0]
+	for h in path[1:]:
 		ret += chr(port_map[first][h])
 		first = h
 	return ret
@@ -80,8 +80,7 @@ def getLoc(switch, key):
 	return _locs[switch - 1].index(key)
 
 if __name__ == "__main__":
+	print(get_chain(33))
 	print(get_chain(147))
-	print(get_chain(2812))
-	print(get_chain(7738))
-	print(get_chain(9948))
+	print(_locs)
 
