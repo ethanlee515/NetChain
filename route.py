@@ -18,7 +18,7 @@ with open("topo.txt", "r") as f:
 nb_hosts = int(nb_hosts)
 nb_switches = int(nb_switches)
 nb_vnodes = 100
-max_key = 10000
+max_key = 1000
 port_map = {}
 
 for a, b in links:
@@ -68,11 +68,16 @@ def get_chain(key):
 	while get_switch(vnodes[i]) == head or get_switch(vnodes[i]) == body:
 		i = (i + 1) % nb_vnodes
 	tail = get_switch(vnodes[i])
-	return (head, body, tail)
+	return (head, body, tail)	
 
-def make_chain_command(key):
-	
-	
+_locs = [[] for x in range(nb_switches)]
+for key in range(max_key):
+	chain = get_chain(key)
+	for switch in chain:
+		_locs[switch - 1].append(key)
+
+def getLoc(switch, key):
+	return _locs[switch - 1].index(key)
 
 if __name__ == "__main__":
 	print(get_chain(147))
