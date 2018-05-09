@@ -17,7 +17,8 @@ with open("topo.txt", "r") as f:
 
 nb_hosts = int(nb_hosts)
 nb_switches = int(nb_switches)
-
+nb_vnodes = 100
+max_key = 10000
 port_map = {}
 
 for a, b in links:
@@ -45,17 +46,22 @@ def route(src, dst):
 		first = h
 	return ret
 
-# Converts a virtual node number to the switch it's assigned to.
-# Probably suboptimal, but it gets the job done.
-def getSwitch(vNode, nb_vNodes):
-	r = nb_vNodes / nb_switches * nb_switches
-	if vNode < r or nb_vNodes - r > 2:
-		return vNode % nb_switches + 1
-	else:
-		return vNode - nb_vNodes + 4
+def getSwitch(vNodeID):
+	return (vNodeID / nb_vnodes) + 1
+
+def hash(vNodeID):
+	return (str(vNodeID * 127)).__hash__() % max_key
+
+vnodes = [x for x in range(nb_vnodes)]
+vnodes.sort(key=lambda x : hash(x))
+
 
 # Converts a key to the corresponding virtual node number	
-def getVNodes(key, nb_vNodes):
-	x = (nb_vNodes * key / 10000) % nb_vNodes
-	return [x, (x + 1) % nb_vNodes, (x + 2) % nb_vNodes]
+def getVNodes(key):
+	pass
+	#TODO
 
+if __name__ == "__main__":
+	print vnodes
+	for n in vnodes:
+		print hash(n)
