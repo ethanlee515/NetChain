@@ -1,0 +1,35 @@
+table_set_default process _nop
+table_set_default route _drop
+table_add route _route 2 =>
+table_add process _put 2 1 2 29 => 0 0
+table_add process _get 2 0 2 29 => 0 0
+table_add process _put 2 1 2 30 => 1 0
+table_add process _get 2 0 2 30 => 1 0
+table_add process _put 2 1 2 31 => 2 0
+table_add process _get 2 0 2 31 => 2 0
+table_add process _put 2 1 2 32 => 3 0
+table_add process _get 2 0 2 32 => 3 0
+table_add process _put 2 1 2 33 => 4 7
+table_add process _put 2 1 2 34 => 5 7
+table_add process _put 2 1 2 35 => 6 7
+table_add process _put 2 1 2 36 => 7 7
+table_add process _put 2 1 2 37 => 8 7
+table_add process _put 2 1 2 38 => 9 7
+table_add process _put 2 1 2 39 => 10 7
+table_add process _put 2 1 2 40 => 11 7
+table_add process _put 2 1 2 41 => 12 7
+table_add process _put 2 1 2 42 => 13 7
+table_add process _put 2 1 2 43 => 14 7
+table_add process _put 2 1 2 44 => 15 7
+table_add process _put 2 1 2 45 => 16 7
+table_add process _put 2 1 2 46 => 17 7
+table_add process _put 2 1 2 47 => 18 7
+table_add process _put 2 1 2 48 => 19 7
+table_add process _put 2 1 2 49 => 20 7
+table_add process _put 2 1 2 50 => 21 7
+table_add process _put 2 1 2 51 => 22 7
+table_add process _put 2 1 2 52 => 23 7
+table_add process _put 2 1 2 53 => 24 7
+table_add process _put 2 1 2 54 => 25 7
+table_add process _put 2 1 2 55 => 26 7
+table_add process _put 2 1 2 56 => 27 7
