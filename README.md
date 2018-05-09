@@ -11,7 +11,7 @@ Class project at Johns Hopkins University: Implement [Netchains](https://www.cs.
 ## Comments
 
 Dr. Jin said during his office hour on May 8 to insert the keys in initialization time,
-since doing otherwise is difficult with how Mininet emulator is set up.
+since doing otherwise is difficult with how Mininet works.
 As a result, only keys between 0 to 199 are supported, so that starting up the demo wouldn't take a long time.
 
 Didn't do the switch failure detection/recovery part.
