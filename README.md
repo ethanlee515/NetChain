@@ -6,6 +6,7 @@ Implement [Netchains](https://www.cs.jhu.edu/~xinjin/files/NSDI18_NetChain.pdf) 
 1. Execute *run\_demo.sh* to start the Mininet CLI
 2. Type *xterm h1* (you can substitute h1 with h2 or h3)
 3. Execute *kv.py h1* on the xterm (again, substituting h1 with whatever host you're using).
+4. Allowed commands are *put \[key\] \[value\]* and *get \[key\]*. Use ctrl+C to exit.
 
 Dr. Jin said during his office hour on May 8 to insert the keys in initialization time,
 since doing otherwise is difficult with how Mininet emulator is set up.
