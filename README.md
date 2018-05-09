@@ -14,7 +14,7 @@ Dr. Jin said during his office hour on May 8 to insert the keys in initializatio
 since doing otherwise is difficult with how Mininet works.
 As a result, only keys between 0 to 199 are supported, so that starting up the demo wouldn't take a long time.
 
-Didn't do the switch failure detection/recovery part.
+I didn't do the switch failure detection/recovery part.
 
 ## Individual file descriptions
 + make\_commands.py: Used to generate the command text files. Can be executed without command line arguments
